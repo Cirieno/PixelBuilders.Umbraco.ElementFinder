@@ -4,44 +4,20 @@
     <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- This replaces the need for .targets and manual copying -->
     <StaticWebAssetBasePath>App_Plugins/Pixelbuilders.Umbraco.ElementFinder</StaticWebAssetBasePath>
-    <PackageId>Pixelbuilders.Umbraco.ElementFinder</PackageId>
     <Product>Pixelbuilders.Umbraco.ElementFinder</Product>
     <Title>Pixelbuilders.Umbraco.ElementFinder</Title>
     <Description>An Umbraco extension that adds a tab to the documents in the Setting tab in the CMS to allow users to search for elements and page types being used within the CMS.</Description>
-    <PackageTags>umbraco;umbraco-marketplace;ElementFinder;Element;Content;Finder;BlockUses</PackageTags>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Version>17.0.0-beta.2</Version>
     <Authors>Pixelbuilders</Authors>
     <Copyright>2026 © Pixelbuilders</Copyright>
-    <PackageProjectUrl>https://github.com/pixelbuilders/PixelBuilders.Umbraco.ElementFinder</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pixelbuilders/PixelBuilders.Umbraco.ElementFinder</RepositoryUrl>
-    <PackageIcon>logo.png</PackageIcon>
-    <PackageReadmeFile>NUGET.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="App_Plugins\Pixelbuilders.Umbraco.ElementFinder\**\*.*"
-             Pack="true"
-             PackagePath="App_Plugins\Pixelbuilders.Umbraco.ElementFinder\" />
-
-    <!-- IMPORTANT: You must also pack the .targets file itself -->
-    <None Include="build\Pixelbuilders.Umbraco.ElementFinder.targets"
-          Pack="true"
-          PackagePath="build\Pixelbuilders.Umbraco.ElementFinder.targets" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="NUGET.md" Pack="true" PackagePath="\" />
-    <None Include="logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

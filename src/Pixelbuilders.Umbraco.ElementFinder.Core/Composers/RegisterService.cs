@@ -9,6 +9,7 @@ namespace ElementFinder.Core.Composers
     {
         public void Compose(IUmbracoBuilder builder)
         {
+            builder.Services.AddControllers().AddApplicationPart(typeof(DocumentTypeUsageController).Assembly);
             builder.Services.ConfigureOptions<ConfigureSwaggerGenOptions>();
         }
     }

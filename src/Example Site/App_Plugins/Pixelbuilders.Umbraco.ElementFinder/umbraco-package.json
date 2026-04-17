@@ -1,0 +1,13 @@
+{
+  "$schema": "../../umbraco-package-schema.json",
+  "name": "Element Finder",
+  "version": "1.0.0",
+  "extensions": [
+    {
+      "type": "backofficeEntryPoint",
+      "alias": "Pixelbuilders.Umbraco.ElementFinder.EntryPoint",
+      "name": "Element Finder Entry Point",
+      "js": "/App_Plugins/Pixelbuilders.Umbraco.ElementFinder/element-finder.js"
+    }
+  ]
+}

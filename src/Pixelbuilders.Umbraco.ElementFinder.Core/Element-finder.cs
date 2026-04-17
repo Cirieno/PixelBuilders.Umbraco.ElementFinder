@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pixelbuilders.Umbraco.ElementFinder.Core.Models;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Umbraco.Cms.Api.Common.Attributes;
 using Umbraco.Cms.Api.Common.Filters;
 using Umbraco.Cms.Core;
@@ -16,6 +17,12 @@ using Umbraco.Cms.Web.Common.Routing;
 
 namespace ElementFinder.Core
 {
+    internal static partial class ElementFinderPatterns
+    {
+        [GeneratedRegex("^[\\s\\r\\n]*[\\[{]", RegexOptions.Compiled)]
+        public static partial Regex LooksLikeJson();
+    }
+
     [ApiController]
     [ApiVersion("1.0")]
     [MapToApi("element-finder")]
@@ -119,10 +126,6 @@ namespace ElementFinder.Core
                         if (property.GetValue() is not string rawValue)
                             continue;
 
-                        if (!rawValue.Contains("contentData") &&
-                            !rawValue.Contains("settingsData"))
-                            continue;
-
                         if (ContainsElementWithKeys(rawValue, elementKeys))
                         {
                             matched = true;
@@ -160,13 +163,18 @@ namespace ElementFinder.Core
             if (string.IsNullOrWhiteSpace(rawValue))
                 return false;
 
+            // Rich text blocks and some editors persist references directly in markup/JSON.
+            // A raw GUID match is cheap and catches formats outside block-editor payloads.
+            if (ContainsRawKeyReference(rawValue, elementKeys))
+                return true;
+
+            if (!ElementFinderPatterns.LooksLikeJson().IsMatch(rawValue))
+                return false;
+
             try
             {
                 using var doc = JsonDocument.Parse(rawValue);
-                var root = doc.RootElement;
-
-                return CheckProperty(root, "contentData", elementKeys)
-                    || CheckProperty(root, "settingsData", elementKeys);
+                return ContainsElementWithKeys(doc.RootElement, elementKeys);
             }
             catch (JsonException)
             {
@@ -174,31 +182,48 @@ namespace ElementFinder.Core
             }
         }
 
-        private static bool CheckProperty(JsonElement root, string propertyName, HashSet<Guid> elementKeys)
+        private static bool ContainsElementWithKeys(JsonElement element, HashSet<Guid> elementKeys)
         {
-            if (!root.TryGetProperty(propertyName, out var data))
-                return false;
-
-            if (data.ValueKind != JsonValueKind.Array)
-                return false;
-
-            foreach (var block in data.EnumerateArray())
+            switch (element.ValueKind)
             {
-                if (block.ValueKind != JsonValueKind.Object)
-                    continue;
+                case JsonValueKind.Object:
+                    if (element.TryGetProperty("contentTypeKey", out var keyProp) &&
+                        keyProp.TryGetGuid(out var blockKey) &&
+                        elementKeys.Contains(blockKey))
+                    {
+                        return true;
+                    }
 
-                if (!block.TryGetProperty("contentTypeKey", out var keyProp))
-                    continue;
+                    foreach (var property in element.EnumerateObject())
+                    {
+                        if (ContainsElementWithKeys(property.Value, elementKeys))
+                            return true;
+                    }
 
-                if (!keyProp.TryGetGuid(out var blockKey))
-                    continue;
+                    return false;
 
-                if (elementKeys.Contains(blockKey))
-                    return true;
+                case JsonValueKind.Array:
+                    foreach (var item in element.EnumerateArray())
+                    {
+                        if (ContainsElementWithKeys(item, elementKeys))
+                            return true;
+                    }
+
+                    return false;
+
+                case JsonValueKind.String:
+                    var stringValue = element.GetString();
+                    return stringValue is not null && ContainsRawKeyReference(stringValue, elementKeys);
+
+                default:
+                    return false;
             }
-
-            return false;
         }
+
+        private static bool ContainsRawKeyReference(string rawValue, HashSet<Guid> elementKeys)
+            => elementKeys.Any(key =>
+                rawValue.Contains(key.ToString("D"), StringComparison.OrdinalIgnoreCase) ||
+                rawValue.Contains(key.ToString("N"), StringComparison.OrdinalIgnoreCase));
 
         // =====================================================
         // CONTENT PAGING HELPERS

@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- Path from the .targets file to the Core's App_Plugins folder -->
-    <ElementFinderSource>$(MSBuildThisFileDirectory)..\App_Plugins\Pixelbuilders.Umbraco.ElementFinder\**\*.*</ElementFinderSource>
+    <!-- Path from the .targets file to the Core project's built frontend assets -->
+    <ElementFinderSource>$(MSBuildThisFileDirectory)..\wwwroot\**\*.*</ElementFinderSource>
   </PropertyGroup>
 
   <Target Name="CopyElementFinderAssets" BeforeTargets="Build">
@@ -13,7 +13,7 @@
 
     <Copy
       SourceFiles="@(ElementFinderFiles)"
-      DestinationFiles="@(ElementFinderFiles->'$(MSBuildProjectDirectory)\wwwroot\App_Plugins\Pixelbuilders.Umbraco.ElementFinder\%(RecursiveDir)%(Filename)%(Extension)')"
+      DestinationFiles="@(ElementFinderFiles->'$(MSBuildProjectDirectory)\App_Plugins\Pixelbuilders.Umbraco.ElementFinder\%(RecursiveDir)%(Filename)%(Extension)')"
       SkipUnchangedFiles="true"
     />
   </Target>
