@@ -4,7 +4,7 @@ var Y = (e) => {
 var Q = (e, t, r) => t.has(e) || Y("Cannot " + r);
 var M = (e, t, r) => (Q(e, t, "read from private field"), r ? r.call(e) : t.get(e)), Z = (e, t, r) => t.has(e) ? Y("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), ee = (e, t, r, s) => (Q(e, t, "write to private field"), s ? s.call(e, r) : t.set(e, r), r);
 import "@umbraco-cms/backoffice/extension-api";
-import { UMB_AUTH_CONTEXT as $e } from "@umbraco-cms/backoffice/auth";
+import { UMB_AUTH_CONTEXT as Ee } from "@umbraco-cms/backoffice/auth";
 import { LitElement as ne, html as f, css as ie, state as v, customElement as oe } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as le } from "@umbraco-cms/backoffice/element-api";
 import { UMB_WORKSPACE_CONTEXT as Te, UMB_WORKSPACE_MODAL as ce } from "@umbraco-cms/backoffice/workspace";
@@ -42,15 +42,15 @@ const Ce = {
       const k = n.headers instanceof Headers ? n.headers : new Headers(n.headers);
       h !== void 0 && k.set("Last-Event-ID", h);
       try {
-        const E = {
+        const $ = {
           redirect: "follow",
           ...n,
           body: n.serializedBody,
           headers: k,
           signal: x
         };
-        let b = new Request(d, E);
-        e && (b = await e(d, E));
+        let b = new Request(d, $);
+        e && (b = await e(d, $));
         const m = await (n.fetch ?? globalThis.fetch)(b);
         if (!m.ok)
           throw new Error(
@@ -76,10 +76,10 @@ const Ce = {
 `);
             R = G.pop() ?? "";
             for (const xe of G) {
-              const Ee = xe.split(`
+              const $e = xe.split(`
 `), j = [];
               let J;
-              for (const y of Ee)
+              for (const y of $e)
                 if (y.startsWith("data:"))
                   j.push(y.replace(/^data:\s*/, ""));
                 else if (y.startsWith("event:"))
@@ -93,30 +93,30 @@ const Ce = {
                   );
                   Number.isNaN(X) || (u = X);
                 }
-              let $, K = !1;
+              let E, K = !1;
               if (j.length) {
                 const y = j.join(`
 `);
                 try {
-                  $ = JSON.parse(y), K = !0;
+                  E = JSON.parse(y), K = !0;
                 } catch {
-                  $ = y;
+                  E = y;
                 }
               }
-              K && (a && await a($), s && ($ = await s($))), r == null || r({
-                data: $,
+              K && (a && await a(E), s && (E = await s(E))), r == null || r({
+                data: E,
                 event: J,
                 id: h,
                 retry: u
-              }), j.length && (yield $);
+              }), j.length && (yield E);
             }
           }
         } finally {
           x.removeEventListener("abort", H), _.releaseLock();
         }
         break;
-      } catch (E) {
-        if (t == null || t(E), i !== void 0 && g >= i)
+      } catch ($) {
+        if (t == null || t($), i !== void 0 && g >= i)
           break;
         const b = Math.min(
           u * 2 ** (g - 1),
@@ -557,10 +557,10 @@ const Fe = () => ({
       k = JSON.parse(x);
     } catch {
     }
-    const E = k ?? x;
-    let b = E;
+    const $ = k ?? x;
+    let b = $;
     for (const p of a.error.fns)
-      p && (b = await p(E, u, w, n));
+      p && (b = await p($, u, w, n));
     if (b = b || {}, n.throwOnError)
       throw b;
     return n.responseStyle === "data" ? void 0 : {
@@ -724,11 +724,15 @@ let A = class extends le(ne) {
     });
     this._modalRegistration.open({}, t);
   }
+  _instanceLabel(e) {
+    return e === 1 ? "instance" : "instances";
+  }
   render() {
     return this._loading ? f`<uui-loader></uui-loader>` : f`
       <uui-box headline="Content Usage">
         <div slot="header">
-          Found ${this._nodes.length} instance(s) of this type.
+          Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)} of
+          this type.
         </div>
 
         ${this._error ? f`<uui-tag look="danger">${this._error}</uui-tag>` : ""}
@@ -937,11 +941,16 @@ let P = class extends le(
       </uui-box>
     `;
   }
+  _instanceLabel(e) {
+    return e === 1 ? "instance" : "instances";
+  }
   _renderResults() {
     return this._error ? f`<uui-tag look="danger">${this._error}</uui-tag>` : this._nodes.length === 0 ? f`<uui-state-message
         >Select a type and click search to see results.</uui-state-message
       >` : f`
-      <div class="results-header">Found ${this._nodes.length} instance(s).</div>
+      <div class="results-header">
+        Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}.
+      </div>
       <div class="usage-list">
         ${this.pagedNodes.map(
       (e, t) => f`
@@ -1100,8 +1109,8 @@ const it = [
   ...ot,
   ...ct,
   ...dt
-], $t = (e, t) => {
-  e.consumeContext($e, async (r) => {
+], Et = (e, t) => {
+  e.consumeContext(Ee, async (r) => {
     const s = r == null ? void 0 : r.getOpenApiConfiguration();
     V.setConfig({
       auth: (s == null ? void 0 : s.token) ?? void 0,
@@ -1111,6 +1120,6 @@ const it = [
   }), t.registerMany(ht);
 };
 export {
-  $t as onInit
+  Et as onInit
 };
 //# sourceMappingURL=element-finder.js.map

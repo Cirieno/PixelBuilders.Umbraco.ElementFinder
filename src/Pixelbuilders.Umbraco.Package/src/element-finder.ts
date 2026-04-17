@@ -114,13 +114,18 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
     this._modalRegistration.open({}, path);
   }
 
+  private _instanceLabel(count: number) {
+    return count === 1 ? "instance" : "instances";
+  }
+
   render() {
     if (this._loading) return html`<uui-loader></uui-loader>`;
 
     return html`
       <uui-box headline="Content Usage">
         <div slot="header">
-          Found ${this._nodes.length} instance(s) of this type.
+          Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)} of
+          this type.
         </div>
 
         ${this._error

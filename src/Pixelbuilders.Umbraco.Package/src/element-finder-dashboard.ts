@@ -152,6 +152,10 @@ export default class ElementFinderDashboard extends UmbElementMixin(
     `;
   }
 
+  private _instanceLabel(count: number) {
+    return count === 1 ? "instance" : "instances";
+  }
+
   private _renderResults() {
     if (this._error)
       return html`<uui-tag look="danger">${this._error}</uui-tag>`;
@@ -161,7 +165,9 @@ export default class ElementFinderDashboard extends UmbElementMixin(
       >`;
 
     return html`
-      <div class="results-header">Found ${this._nodes.length} instance(s).</div>
+      <div class="results-header">
+        Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}.
+      </div>
       <div class="usage-list">
         ${this.pagedNodes.map(
           (node, index) => html`
