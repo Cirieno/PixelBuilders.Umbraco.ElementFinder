@@ -13,6 +13,7 @@ export type Details = {
 export type Elements = {
     name: string;
     alias: string;
+    kind: string;
 };
 
 export type Usage = {

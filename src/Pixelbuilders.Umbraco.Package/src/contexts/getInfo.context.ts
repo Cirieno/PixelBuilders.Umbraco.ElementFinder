@@ -18,13 +18,13 @@ export class GetInfoContext extends UmbControllerBase {
     this.provideContext(GET_INFO_CONTEXT_TOKEN, this);
   }
 
-  async getInfoFromAlias(alias: string) : Promise<Usage | null>{
+  async getInfoFromAlias(alias: string): Promise<Usage | null> {
     return this.#dataSource.getElementInfo(alias);
   }
 
-    async getAllElementTypes(): Promise<Elements[]> {
-        return this.#dataSource.getAllDocumentTypes();
-    }
+  async getAllElementTypes(): Promise<Elements[]> {
+    return this.#dataSource.getAllDocumentTypes();
+  }
 }
 
 export default GetInfoContext;

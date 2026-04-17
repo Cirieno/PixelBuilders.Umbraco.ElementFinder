@@ -53,13 +53,16 @@ namespace ElementFinder.Core
         [ProducesResponseType(typeof(List<Elements>), 200)]
         public List<Elements> GetAllDocumentTypes()
         {
-            // Fetch all Document Types and Elements
             return _contentTypeService.GetAll()
                 .Select(x => new Elements
                 {
-                    Name = x.Name,
-                    Alias = x.Alias,
-                }).OrderBy(x => x.Name).ToList();;
+                    Name = x.Name ?? string.Empty,
+                    Alias = x.Alias ?? string.Empty,
+                    Kind = x.IsElement ? "element" : "document",
+                })
+                .OrderBy(x => x.Kind)
+                .ThenBy(x => x.Name)
+                .ToList();
         }
 
         [HttpGet("usage/{alias}")]

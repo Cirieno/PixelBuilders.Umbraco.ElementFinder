@@ -19,6 +19,10 @@ import type { Details, Elements, Usage } from "./api";
 import { UmbModalRouteRegistrationController } from "@umbraco-cms/backoffice/router";
 
 const ITEMS_PER_PAGE = 10;
+const TYPE_GROUP_LABELS: Record<string, string> = {
+  document: "Document Types",
+  element: "Element Types",
+};
 
 @customElement("element-finder-dashboard")
 export default class ElementFinderDashboard extends UmbElementMixin(
@@ -112,6 +116,10 @@ export default class ElementFinderDashboard extends UmbElementMixin(
     this._modalRegistration.open({}, path);
   }
 
+  private _getGroupLabel(kind: string) {
+    return TYPE_GROUP_LABELS[kind] ?? "Other Types";
+  }
+
   render() {
     return html`
       <uui-box headline="Element Finder">
@@ -120,10 +128,11 @@ export default class ElementFinderDashboard extends UmbElementMixin(
             .options=${this._docTypes.map((dt) => ({
               name: dt.name,
               value: dt.alias,
+              group: this._getGroupLabel(dt.kind),
               selected: this._selectedAlias === dt.alias,
             }))}
             @change=${this._onSelectChange}
-            placeholder="Select a Document Type"
+            placeholder="Select a type"
           >
           </uui-select>
           <uui-button

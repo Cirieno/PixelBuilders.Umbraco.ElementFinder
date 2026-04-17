@@ -1,10 +1,10 @@
-var Q = (e) => {
+var Y = (e) => {
   throw TypeError(e);
 };
-var Y = (e, t, r) => t.has(e) || Q("Cannot " + r);
-var R = (e, t, r) => (Y(e, t, "read from private field"), r ? r.call(e) : t.get(e)), Z = (e, t, r) => t.has(e) ? Q("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), ee = (e, t, r, s) => (Y(e, t, "write to private field"), s ? s.call(e, r) : t.set(e, r), r);
+var Q = (e, t, r) => t.has(e) || Y("Cannot " + r);
+var M = (e, t, r) => (Q(e, t, "read from private field"), r ? r.call(e) : t.get(e)), Z = (e, t, r) => t.has(e) ? Y("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), ee = (e, t, r, s) => (Q(e, t, "write to private field"), s ? s.call(e, r) : t.set(e, r), r);
 import "@umbraco-cms/backoffice/extension-api";
-import { UMB_AUTH_CONTEXT as Ee } from "@umbraco-cms/backoffice/auth";
+import { UMB_AUTH_CONTEXT as $e } from "@umbraco-cms/backoffice/auth";
 import { LitElement as ne, html as f, css as ie, state as v, customElement as oe } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as le } from "@umbraco-cms/backoffice/element-api";
 import { UMB_WORKSPACE_CONTEXT as Te, UMB_WORKSPACE_MODAL as ce } from "@umbraco-cms/backoffice/workspace";
@@ -19,7 +19,7 @@ const Ce = {
     e,
     (t, r) => typeof r == "bigint" ? r.toString() : r
   )
-}, ke = ({
+}, Oe = ({
   onRequest: e,
   onSseError: t,
   onSseEvent: r,
@@ -33,24 +33,24 @@ const Ce = {
   ...n
 }) => {
   let h;
-  const k = l ?? ((u) => new Promise((g) => setTimeout(g, u)));
+  const O = l ?? ((u) => new Promise((g) => setTimeout(g, u)));
   return { stream: async function* () {
     let u = c ?? 3e3, g = 0;
     const x = n.signal ?? new AbortController().signal;
     for (; !x.aborted; ) {
       g++;
-      const O = n.headers instanceof Headers ? n.headers : new Headers(n.headers);
-      h !== void 0 && O.set("Last-Event-ID", h);
+      const k = n.headers instanceof Headers ? n.headers : new Headers(n.headers);
+      h !== void 0 && k.set("Last-Event-ID", h);
       try {
-        const $ = {
+        const E = {
           redirect: "follow",
           ...n,
           body: n.serializedBody,
-          headers: O,
+          headers: k,
           signal: x
         };
-        let b = new Request(d, $);
-        e && (b = await e(d, $));
+        let b = new Request(d, E);
+        e && (b = await e(d, E));
         const m = await (n.fetch ?? globalThis.fetch)(b);
         if (!m.ok)
           throw new Error(
@@ -58,30 +58,30 @@ const Ce = {
           );
         if (!m.body) throw new Error("No body in SSE response");
         const _ = m.body.pipeThrough(new TextDecoderStream()).getReader();
-        let M = "";
-        const L = () => {
+        let R = "";
+        const H = () => {
           try {
             _.cancel();
           } catch {
           }
         };
-        x.addEventListener("abort", L);
+        x.addEventListener("abort", H);
         try {
           for (; ; ) {
             const { done: we, value: Pe } = await _.read();
             if (we) break;
-            M += Pe;
-            const G = M.split(`
+            R += Pe;
+            const G = R.split(`
 
 `);
-            M = G.pop() ?? "";
+            R = G.pop() ?? "";
             for (const xe of G) {
-              const $e = xe.split(`
-`), N = [];
+              const Ee = xe.split(`
+`), j = [];
               let J;
-              for (const y of $e)
+              for (const y of Ee)
                 if (y.startsWith("data:"))
-                  N.push(y.replace(/^data:\s*/, ""));
+                  j.push(y.replace(/^data:\s*/, ""));
                 else if (y.startsWith("event:"))
                   J = y.replace(/^event:\s*/, "");
                 else if (y.startsWith("id:"))
@@ -93,40 +93,40 @@ const Ce = {
                   );
                   Number.isNaN(X) || (u = X);
                 }
-              let E, K = !1;
-              if (N.length) {
-                const y = N.join(`
+              let $, K = !1;
+              if (j.length) {
+                const y = j.join(`
 `);
                 try {
-                  E = JSON.parse(y), K = !0;
+                  $ = JSON.parse(y), K = !0;
                 } catch {
-                  E = y;
+                  $ = y;
                 }
               }
-              K && (a && await a(E), s && (E = await s(E))), r == null || r({
-                data: E,
+              K && (a && await a($), s && ($ = await s($))), r == null || r({
+                data: $,
                 event: J,
                 id: h,
                 retry: u
-              }), N.length && (yield E);
+              }), j.length && (yield $);
             }
           }
         } finally {
-          x.removeEventListener("abort", L), _.releaseLock();
+          x.removeEventListener("abort", H), _.releaseLock();
         }
         break;
-      } catch ($) {
-        if (t == null || t($), i !== void 0 && g >= i)
+      } catch (E) {
+        if (t == null || t(E), i !== void 0 && g >= i)
           break;
         const b = Math.min(
           u * 2 ** (g - 1),
           o ?? 3e4
         );
-        await k(b);
+        await O(b);
       }
     }
   }() };
-}, Oe = (e) => {
+}, ke = (e) => {
   switch (e) {
     case "label":
       return ".";
@@ -179,7 +179,7 @@ const Ce = {
         return `${r}=${o}`;
     }
   }
-  const c = Oe(s), i = a.map((o) => s === "label" || s === "simple" ? e ? o : encodeURIComponent(o) : q({
+  const c = ke(s), i = a.map((o) => s === "label" || s === "simple" ? e ? o : encodeURIComponent(o) : q({
     allowReserved: e,
     name: r,
     value: o
@@ -236,9 +236,9 @@ const Ce = {
     })
   ).join(i);
   return s === "label" || s === "matrix" ? i + o : o;
-}, je = /\{[^{}]+\}/g, Ne = ({ path: e, url: t }) => {
+}, Ue = /\{[^{}]+\}/g, je = ({ path: e, url: t }) => {
   let r = t;
-  const s = t.match(je);
+  const s = t.match(Ue);
   if (s)
     for (const a of s) {
       let c = !1, i = a.substring(1, a.length - 1), o = "simple";
@@ -282,7 +282,7 @@ const Ce = {
       r = r.replace(a, d);
     }
   return r;
-}, Ue = ({
+}, Ne = ({
   baseUrl: e,
   path: t,
   query: r,
@@ -291,7 +291,7 @@ const Ce = {
 }) => {
   const c = a.startsWith("/") ? a : `/${a}`;
   let i = (e ?? "") + c;
-  t && (i = Ne({ path: t, url: i }));
+  t && (i = je({ path: t, url: i }));
   let o = r ? s(r) : "";
   return o.startsWith("?") && (o = o.substring(1)), o && (i += `?${o}`), i;
 };
@@ -363,15 +363,15 @@ const qe = async (e, t) => {
     if (t.startsWith("text/"))
       return "text";
   }
-}, Me = (e, t) => {
+}, Re = (e, t) => {
   var r, s;
   return t ? !!(e.headers.has(t) || (r = e.query) != null && r[t] || (s = e.headers.get("Cookie")) != null && s.includes(`${t}=`)) : !1;
-}, Re = async ({
+}, Me = async ({
   security: e,
   ...t
 }) => {
   for (const r of e) {
-    if (Me(t, r.name))
+    if (Re(t, r.name))
       continue;
     const s = await qe(r, t.auth);
     if (!s)
@@ -390,7 +390,7 @@ const qe = async (e, t) => {
         break;
     }
   }
-}, te = (e) => Ue({
+}, te = (e) => Ne({
   baseUrl: e.baseUrl,
   path: e.path,
   query: e.query,
@@ -454,7 +454,7 @@ const Fe = () => ({
   error: new W(),
   request: new W(),
   response: new W()
-}), Ve = pe({
+}), Le = pe({
   allowReserved: !1,
   array: {
     explode: !0,
@@ -464,15 +464,15 @@ const Fe = () => ({
     explode: !0,
     style: "deepObject"
   }
-}), He = {
+}), Ve = {
   "Content-Type": "application/json"
 }, me = (e = {}) => ({
   ...Ce,
-  headers: He,
+  headers: Ve,
   parseAs: "auto",
-  querySerializer: Ve,
+  querySerializer: Le,
   ...e
-}), Le = (e = {}) => {
+}), He = (e = {}) => {
   let t = re(me(), e);
   const r = () => ({ ...t }), s = (d) => (t = re(t, d), r()), a = Fe(), c = async (d) => {
     const n = {
@@ -482,23 +482,23 @@ const Fe = () => ({
       headers: ge(t.headers, d.headers),
       serializedBody: void 0
     };
-    n.security && await Re({
+    n.security && await Me({
       ...n,
       security: n.security
     }), n.requestValidator && await n.requestValidator(n), n.body !== void 0 && n.bodySerializer && (n.serializedBody = n.bodySerializer(n.body)), (n.body === void 0 || n.serializedBody === "") && n.headers.delete("Content-Type");
     const h = te(n);
     return { opts: n, url: h };
   }, i = async (d) => {
-    const { opts: n, url: h } = await c(d), k = {
+    const { opts: n, url: h } = await c(d), O = {
       redirect: "follow",
       ...n,
       body: De(n)
     };
-    let w = new Request(h, k);
+    let w = new Request(h, O);
     for (const p of a.request.fns)
       p && (w = await p(w, n));
-    const j = n.fetch;
-    let u = await j(w);
+    const U = n.fetch;
+    let u = await U(w);
     for (const p of a.response.fns)
       p && (u = await p(u, w, n));
     const g = {
@@ -552,15 +552,15 @@ const Fe = () => ({
       };
     }
     const x = await u.text();
-    let O;
+    let k;
     try {
-      O = JSON.parse(x);
+      k = JSON.parse(x);
     } catch {
     }
-    const $ = O ?? x;
-    let b = $;
+    const E = k ?? x;
+    let b = E;
     for (const p of a.error.fns)
-      p && (b = await p($, u, w, n));
+      p && (b = await p(E, u, w, n));
     if (b = b || {}, n.throwOnError)
       throw b;
     return n.responseStyle === "data" ? void 0 : {
@@ -568,19 +568,19 @@ const Fe = () => ({
       ...g
     };
   }, o = (d) => (n) => i({ ...n, method: d }), l = (d) => async (n) => {
-    const { opts: h, url: k } = await c(n);
-    return ke({
+    const { opts: h, url: O } = await c(n);
+    return Oe({
       ...h,
       body: h.body,
       headers: h.headers,
       method: d,
-      onRequest: async (w, j) => {
-        let u = new Request(w, j);
+      onRequest: async (w, U) => {
+        let u = new Request(w, U);
         for (const g of a.request.fns)
           g && (u = await g(u, h));
         return u;
       },
-      url: k
+      url: O
     });
   };
   return {
@@ -610,7 +610,7 @@ const Fe = () => ({
     },
     trace: o("TRACE")
   };
-}, H = Le(me()), Ge = (e) => ((e == null ? void 0 : e.client) ?? H).get({
+}, V = He(me()), Ge = (e) => ((e == null ? void 0 : e.client) ?? V).get({
   security: [
     {
       scheme: "bearer",
@@ -619,7 +619,7 @@ const Fe = () => ({
   ],
   url: "/umbraco/element-finder/api/v1/all-types",
   ...e
-}), Je = (e) => (e.client ?? H).get({
+}), Je = (e) => (e.client ?? V).get({
   security: [
     {
       scheme: "bearer",
@@ -657,10 +657,10 @@ class se extends Ae {
     ee(this, C, new Ke()), this.provideContext(B, this);
   }
   async getInfoFromAlias(r) {
-    return R(this, C).getElementInfo(r);
+    return M(this, C).getElementInfo(r);
   }
   async getAllElementTypes() {
-    return R(this, C).getAllDocumentTypes();
+    return M(this, C).getAllDocumentTypes();
   }
 }
 C = new WeakMap();
@@ -670,12 +670,12 @@ const B = new Se("GetInfoContext"), Xe = /* @__PURE__ */ Object.freeze(/* @__PUR
   GetInfoContext: se,
   default: se
 }, Symbol.toStringTag, { value: "Module" }));
-var Qe = Object.defineProperty, Ye = Object.getOwnPropertyDescriptor, ye = (e) => {
+var Ye = Object.defineProperty, Qe = Object.getOwnPropertyDescriptor, ye = (e) => {
   throw TypeError(e);
 }, z = (e, t, r, s) => {
-  for (var a = s > 1 ? void 0 : s ? Ye(t, r) : t, c = e.length - 1, i; c >= 0; c--)
+  for (var a = s > 1 ? void 0 : s ? Qe(t, r) : t, c = e.length - 1, i; c >= 0; c--)
     (i = e[c]) && (a = (s ? i(t, r, a) : i(a)) || a);
-  return s && a && Qe(t, r, a), a;
+  return s && a && Ye(t, r, a), a;
 }, be = (e, t, r) => t.has(e) || ye("Cannot " + r), ae = (e, t, r) => (be(e, t, "read from private field"), r ? r.call(e) : t.get(e)), Ze = (e, t, r) => t.has(e) ? ye("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), et = (e, t, r, s) => (be(e, t, "write to private field"), t.set(e, r), r), I;
 const F = 10;
 let A = class extends le(ne) {
@@ -846,8 +846,11 @@ var tt = Object.defineProperty, rt = Object.getOwnPropertyDescriptor, _e = (e) =
   for (var a = s > 1 ? void 0 : s ? rt(t, r) : t, c = e.length - 1, i; c >= 0; c--)
     (i = e[c]) && (a = (s ? i(t, r, a) : i(a)) || a);
   return s && a && tt(t, r, a), a;
-}, ve = (e, t, r) => t.has(e) || _e("Cannot " + r), U = (e, t, r) => (ve(e, t, "read from private field"), t.get(e)), st = (e, t, r) => t.has(e) ? _e("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), at = (e, t, r, s) => (ve(e, t, "write to private field"), t.set(e, r), r), T;
-const V = 10;
+}, ve = (e, t, r) => t.has(e) || _e("Cannot " + r), N = (e, t, r) => (ve(e, t, "read from private field"), t.get(e)), st = (e, t, r) => t.has(e) ? _e("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), at = (e, t, r, s) => (ve(e, t, "write to private field"), t.set(e, r), r), T;
+const L = 10, nt = {
+  document: "Document Types",
+  element: "Element Types"
+};
 let P = class extends le(
   ne
 ) {
@@ -863,13 +866,13 @@ let P = class extends le(
     }));
   }
   async _loadDocTypes() {
-    U(this, T) && (this._docTypes = await U(this, T).getAllElementTypes());
+    N(this, T) && (this._docTypes = await N(this, T).getAllElementTypes());
   }
   async _handleSearch() {
-    if (!(!this._selectedAlias || !U(this, T))) {
+    if (!(!this._selectedAlias || !N(this, T))) {
       this._loading = !0, this._error = null;
       try {
-        const e = await U(this, T).getInfoFromAlias(
+        const e = await N(this, T).getInfoFromAlias(
           this._selectedAlias
         );
         this._nodes = (e == null ? void 0 : e.usages) ?? [], this._currentPage = 1;
@@ -884,11 +887,11 @@ let P = class extends le(
     this._selectedAlias = e.target.value;
   }
   get pagedNodes() {
-    const e = (this._currentPage - 1) * V;
-    return this._nodes.slice(e, e + V);
+    const e = (this._currentPage - 1) * L;
+    return this._nodes.slice(e, e + L);
   }
   totalPages() {
-    return Math.ceil(this._nodes.length / V);
+    return Math.ceil(this._nodes.length / L);
   }
   nextPage() {
     this._currentPage < this.totalPages() && this._currentPage++;
@@ -902,6 +905,9 @@ let P = class extends le(
     });
     this._modalRegistration.open({}, t);
   }
+  _getGroupLabel(e) {
+    return nt[e] ?? "Other Types";
+  }
   render() {
     return f`
       <uui-box headline="Element Finder">
@@ -910,10 +916,11 @@ let P = class extends le(
             .options=${this._docTypes.map((e) => ({
       name: e.name,
       value: e.alias,
+      group: this._getGroupLabel(e.kind),
       selected: this._selectedAlias === e.alias
     }))}
             @change=${this._onSelectChange}
-            placeholder="Select a Document Type"
+            placeholder="Select a type"
           >
           </uui-select>
           <uui-button
@@ -1045,7 +1052,7 @@ S([
 P = S([
   oe("element-finder-dashboard")
 ], P);
-const nt = [
+const it = [
   {
     type: "workspaceView",
     name: "Element Finder",
@@ -1064,14 +1071,14 @@ const nt = [
       pathname: "element-finder"
     }
   }
-], it = [...nt], ot = [
+], ot = [...it], lt = [
   {
     type: "globalContext",
     alias: "getInfo.context",
     name: "Get Info context",
     js: () => Promise.resolve().then(() => Xe)
   }
-], lt = [...ot], ct = [
+], ct = [...lt], ut = [
   {
     type: "dashboard",
     name: "Element Finder",
@@ -1089,19 +1096,19 @@ const nt = [
       }
     ]
   }
-], ut = [...ct], dt = [
-  ...it,
-  ...lt,
-  ...ut
+], dt = [...ut], ht = [
+  ...ot,
+  ...ct,
+  ...dt
 ], $t = (e, t) => {
-  e.consumeContext(Ee, async (r) => {
+  e.consumeContext($e, async (r) => {
     const s = r == null ? void 0 : r.getOpenApiConfiguration();
-    H.setConfig({
+    V.setConfig({
       auth: (s == null ? void 0 : s.token) ?? void 0,
       baseUrl: (s == null ? void 0 : s.base) ?? "",
       credentials: (s == null ? void 0 : s.credentials) ?? "same-origin"
     });
-  }), t.registerMany(dt);
+  }), t.registerMany(ht);
 };
 export {
   $t as onInit

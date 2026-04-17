@@ -148,6 +148,7 @@
       "Elements": {
         "required": [
           "alias",
+          "kind",
           "name"
         ],
         "type": "object",
@@ -156,6 +157,9 @@
             "type": "string"
           },
           "alias": {
+            "type": "string"
+          },
+          "kind": {
             "type": "string"
           }
         },
