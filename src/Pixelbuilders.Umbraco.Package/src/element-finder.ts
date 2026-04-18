@@ -23,6 +23,9 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
   private _nodes: Array<Details> = [];
 
   @state()
+  private _contentTypeLabel = "Document Type";
+
+  @state()
   private _loading = false;
 
   @state()
@@ -49,6 +52,8 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
 
       this.observe((workspace as any).data, async (data: any) => {
         if (!data?.alias || !this.#getInfoContext) return;
+
+        this._contentTypeLabel = data?.isElement ? "Element Type" : "Document Type";
 
         this._loading = true;
         this._error = null;
@@ -122,10 +127,12 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
     if (this._loading) return html`<uui-loader></uui-loader>`;
 
     return html`
-      <uui-box headline="Content Usage">
+      <uui-box>
         <div slot="header">
-          Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)} of
-          this type.
+          <strong>
+            Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)} of this
+            ${this._contentTypeLabel}${this._nodes.length > 0 ? ":" : ""}
+          </strong>
         </div>
 
         ${this._error
@@ -181,7 +188,7 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
             `
           : html`
               <uui-state-message>
-                No content nodes are currently using this Document Type.
+                No content nodes are currently using this ${this._contentTypeLabel}.
               </uui-state-message>
             `}
       </uui-box>

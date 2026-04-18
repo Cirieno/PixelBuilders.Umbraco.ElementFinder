@@ -166,7 +166,7 @@ export default class ElementFinderDashboard extends UmbElementMixin(
 
     return html`
       <div class="results-header">
-        Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}.
+        Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}${this._nodes.length > 0 ? ":" : ""}
       </div>
       <div class="usage-list">
         ${this.pagedNodes.map(
