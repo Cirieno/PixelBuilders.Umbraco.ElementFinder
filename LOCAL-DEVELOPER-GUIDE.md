@@ -30,10 +30,12 @@ As your Umbraco site is using a manually copied plugin DLL, add this to `Program
 ```csharp
 using System.Reflection;
 using System.Runtime.Loader;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 string manualPluginBinPath = Path.Combine(builder.Environment.ContentRootPath, "bin");
+List<Assembly> manualPluginAssemblies = [];
 if (Directory.Exists(manualPluginBinPath))
 {
     HashSet<string> loadedAssemblyNames = AppDomain.CurrentDomain
@@ -52,7 +54,8 @@ if (Directory.Exists(manualPluginBinPath))
 
         try
         {
-            AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            Assembly assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            manualPluginAssemblies.Add(assembly);
             loadedAssemblyNames.Add(assemblyName);
         }
         catch (FileLoadException)
@@ -63,11 +66,22 @@ if (Directory.Exists(manualPluginBinPath))
         }
     }
 }
+
+foreach (Assembly manualPluginAssembly in manualPluginAssemblies)
+{
+    builder.Services
+        .AddControllers()
+        .PartManager
+        .ApplicationParts
+        .Add(new AssemblyPart(manualPluginAssembly));
+}
 ```
 
 Why this matters:
 
 `dotnet run` does not automatically treat a manually copied plugin DLL as part of the app dependency graph. Without this preload step, the DLL can exist in `bin` but the API route still will not register.
+
+Loading the DLL is not enough on its own. The assembly also needs to be added to MVC application parts so ASP.NET Core can discover controllers inside the plugin.
 
 ## Build The Plugin
 
@@ -134,6 +148,7 @@ Usually one of these is wrong:
 1. The Umbraco site's `Program.cs` does not include the code block from `One-Time Change In The Umbraco Site`
 2. The wrong DLL was copied into `bin`
 3. The site was not restarted after copying the DLL
+4. The DLL was loaded but not registered as an MVC application part
 
 ### If that request returns `401`
 
