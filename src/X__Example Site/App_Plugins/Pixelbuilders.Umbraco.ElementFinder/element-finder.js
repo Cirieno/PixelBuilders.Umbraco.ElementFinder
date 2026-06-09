@@ -928,6 +928,7 @@ let P = class extends le(
       group: this._getGroupLabel(e.kind),
       selected: this._selectedAlias === e.alias
     }))}
+            label="Element Finder"
             @change=${this._onSelectChange}
             placeholder="Select a type"
           >
@@ -954,7 +955,7 @@ let P = class extends le(
         >Select a type and click search to see results.</uui-state-message
       >` : f`
       <div class="results-header">
-        Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}.
+        Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}${this._nodes.length > 0 ? ":" : ""}
       </div>
       <div class="usage-list">
         ${this.pagedNodes.map(
