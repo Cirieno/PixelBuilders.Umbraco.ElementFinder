@@ -1,6 +1,6 @@
-# RL Pixelbuilders Umbraco Element Finder Build and Deploy Guide
+# RL_Pixelbuilders Umbraco Element Finder Build and Deploy Guide
 
-This guide explains how to build the extension and which files to copy into your Umbraco site.
+This guide explains how to build the extension and which exact files are produced and copied into your Umbraco site.
 
 ## Target Umbraco Folder Layout
 
@@ -27,6 +27,12 @@ npm run build
 This writes the built plugin files into:
 
 - `src/Pixelbuilders.Umbraco.ElementFinder.Core/wwwroot`
+
+The web assets in that folder keep their generated names:
+
+- `element-finder.js`
+- `element-finder.js.map` (optional)
+- `umbraco-package.json`
 
 ### 2. Build the .NET assembly (DLL)
 
@@ -78,4 +84,4 @@ Confirm your deployed `umbraco-package.json` contains:
 1. Restart your Umbraco site.
 2. Hard refresh the backoffice browser tab.
 3. Open Content > Element Finder dashboard.
-4. Confirm there are no 404 errors for `element-finder.js`.
+4. Confirm there are no 404 errors for `element-finder.js` under `App_Plugins/RL_PixelbuildersUmbracoElementFinder`.
