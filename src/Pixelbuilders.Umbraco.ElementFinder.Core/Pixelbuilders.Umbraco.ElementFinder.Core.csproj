@@ -4,9 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <StaticWebAssetBasePath>App_Plugins/Pixelbuilders.Umbraco.ElementFinder</StaticWebAssetBasePath>
-    <Product>Pixelbuilders.Umbraco.ElementFinder</Product>
-    <Title>Pixelbuilders.Umbraco.ElementFinder</Title>
+    <AssemblyName>RL_PixelbuildersUmbracoElementFinder.Core</AssemblyName>
+    <StaticWebAssetBasePath>App_Plugins/RL_PixelbuildersUmbracoElementFinder</StaticWebAssetBasePath>
+    <Product>RL_PixelbuildersUmbracoElementFinder</Product>
+    <Title>RL_PixelbuildersUmbracoElementFinder</Title>
     <Description>An Umbraco extension that adds a tab to the documents in the Setting tab in the CMS to allow users to search for elements and page types being used within the CMS.</Description>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Version>17.0.0-beta.2</Version>
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.4.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.5.0" />
   </ItemGroup>
 
 </Project>

@@ -131,6 +131,7 @@ export default class ElementFinderDashboard extends UmbElementMixin(
               group: this._getGroupLabel(dt.kind),
               selected: this._selectedAlias === dt.alias,
             }))}
+            label="Element Finder"
             @change=${this._onSelectChange}
             placeholder="Select a type"
           >

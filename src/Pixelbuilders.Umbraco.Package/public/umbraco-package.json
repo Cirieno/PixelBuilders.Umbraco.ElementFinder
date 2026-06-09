@@ -5,9 +5,9 @@
   "extensions": [
     {
       "type": "backofficeEntryPoint",
-      "alias": "Pixelbuilders.Umbraco.ElementFinder.EntryPoint",
+      "alias": "RL_PixelbuildersUmbracoElementFinder.EntryPoint",
       "name": "Element Finder Entry Point",
-      "js": "/App_Plugins/Pixelbuilders.Umbraco.ElementFinder/element-finder.js"
+      "js": "/App_Plugins/RL_PixelbuildersUmbracoElementFinder/element-finder.js"
     }
   ]
 }

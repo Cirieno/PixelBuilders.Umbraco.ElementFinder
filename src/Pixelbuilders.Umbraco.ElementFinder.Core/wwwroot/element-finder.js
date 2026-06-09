@@ -928,6 +928,7 @@ let P = class extends le(
       group: this._getGroupLabel(e.kind),
       selected: this._selectedAlias === e.alias
     }))}
+            label="Element Finder"
             @change=${this._onSelectChange}
             placeholder="Select a type"
           >

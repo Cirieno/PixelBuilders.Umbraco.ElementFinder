@@ -13,7 +13,7 @@
 
     <Copy
       SourceFiles="@(ElementFinderFiles)"
-      DestinationFiles="@(ElementFinderFiles->'$(MSBuildProjectDirectory)\App_Plugins\Pixelbuilders.Umbraco.ElementFinder\%(RecursiveDir)%(Filename)%(Extension)')"
+      DestinationFiles="@(ElementFinderFiles->'$(MSBuildProjectDirectory)\App_Plugins\RL_PixelbuildersUmbracoElementFinder\%(RecursiveDir)%(Filename)%(Extension)')"
       SkipUnchangedFiles="true"
     />
   </Target>
