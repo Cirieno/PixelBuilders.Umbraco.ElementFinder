@@ -17,6 +17,7 @@ import {
 } from "./contexts/getInfo.context";
 import type { Details, Elements, Usage } from "./api";
 import { UmbModalRouteRegistrationController } from "@umbraco-cms/backoffice/router";
+import { UUISelectElement } from "@umbraco-cms/backoffice/external/uui";
 
 const ITEMS_PER_PAGE = 10;
 const TYPE_GROUP_LABELS: Record<string, string> = {
@@ -30,13 +31,17 @@ export default class ElementFinderDashboard extends UmbElementMixin(
 ) {
   @state() private _nodes: Array<Details> = [];
   @state() private _loading = false;
+  @state() private _hasSearched = false;
   @state() private _error: string | null = null;
+  @state() private _typesError: string | null = null;
   @state() private _currentPage = 1;
   @state() private _selectedAlias = "";
   @state() private _docTypes: Array<Elements> = [];
 
   private _modalRegistration: UmbModalRouteRegistrationController;
   #getInfoContext?: GetInfoContext;
+  #usageRequestId = 0;
+  #typesRequestId = 0;
 
   constructor() {
     super();
@@ -58,15 +63,28 @@ export default class ElementFinderDashboard extends UmbElementMixin(
   }
 
   private async _loadDocTypes() {
-    if (this.#getInfoContext) {
-      // Now returns Elements[] correctly
-      this._docTypes = await this.#getInfoContext.getAllElementTypes();
+    const requestId = ++this.#typesRequestId;
+    if (!this.#getInfoContext) return;
+
+    this._typesError = null;
+    try {
+      const docTypes = await this.#getInfoContext.getAllElementTypes();
+      if (requestId !== this.#typesRequestId) return;
+
+      this._docTypes = docTypes;
+    } catch (err) {
+      if (requestId !== this.#typesRequestId) return;
+
+      console.error(err);
+      this._typesError = "Error fetching document types";
+      this._docTypes = [];
     }
   }
 
   private async _handleSearch() {
     if (!this._selectedAlias || !this.#getInfoContext) return;
 
+    const requestId = ++this.#usageRequestId;
     this._loading = true;
     this._error = null;
 
@@ -74,18 +92,46 @@ export default class ElementFinderDashboard extends UmbElementMixin(
       const usage: Usage | null = await this.#getInfoContext.getInfoFromAlias(
         this._selectedAlias,
       );
+      if (requestId !== this.#usageRequestId) return;
+
       this._nodes = usage?.usages ?? [];
       this._currentPage = 1;
+      this._hasSearched = true;
     } catch (err) {
+      if (requestId !== this.#usageRequestId) return;
+
+      console.error(err);
       this._error = "Error fetching usage";
       this._nodes = [];
     } finally {
-      this._loading = false;
+      if (requestId === this.#usageRequestId) {
+        this._loading = false;
+      }
     }
   }
 
-  private _onSelectChange(e: any) {
-    this._selectedAlias = e.target.value;
+  private _onSelectChange(e: Event) {
+    if (!(e.currentTarget instanceof UUISelectElement)) return;
+    const alias = e.currentTarget.value;
+    if (typeof alias !== "string") {
+      console.error("Expected a document type alias from the type selector");
+      return;
+    }
+    if (this._selectedAlias === alias) return;
+
+    ++this.#usageRequestId;
+    this._selectedAlias = alias;
+    this._nodes = [];
+    this._currentPage = 1;
+    this._error = null;
+    this._loading = false;
+    this._hasSearched = false;
+  }
+
+  override disconnectedCallback() {
+    ++this.#usageRequestId;
+    ++this.#typesRequestId;
+    super.disconnectedCallback();
   }
 
   private get pagedNodes() {
@@ -139,7 +185,7 @@ export default class ElementFinderDashboard extends UmbElementMixin(
           <uui-button
             look="primary"
             label="Find Usage"
-            .disabled=${!this._selectedAlias || this._loading}
+            .disabled=${!this._selectedAlias || this._loading || this._typesError !== null}
             @click=${this._handleSearch}
           >
             Find Usage
@@ -158,9 +204,11 @@ export default class ElementFinderDashboard extends UmbElementMixin(
   }
 
   private _renderResults() {
+    if (this._typesError)
+      return html`<uui-tag look="danger">${this._typesError}</uui-tag>`;
     if (this._error)
       return html`<uui-tag look="danger">${this._error}</uui-tag>`;
-    if (this._nodes.length === 0)
+    if (!this._hasSearched)
       return html`<uui-state-message
         >Select a type and click search to see results.</uui-state-message
       >`;

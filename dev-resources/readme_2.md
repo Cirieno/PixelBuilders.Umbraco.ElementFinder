@@ -14,6 +14,8 @@ DLL name:
 
 ## Build Steps
 
+The Umbraco 17.8 backoffice package requires Node.js 24.13 or later and npm 11 or later.
+
 ### 1. Build the backoffice bundle (JavaScript)
 
 From the repository root:

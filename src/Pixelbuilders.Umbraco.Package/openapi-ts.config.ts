@@ -5,7 +5,7 @@ export default defineConfig({
     input: './swagger.json', 
     output: {
         path: 'src/api',
-        lint: false
+        postProcess: []
     },
     plugins: [
         '@hey-api/client-fetch'

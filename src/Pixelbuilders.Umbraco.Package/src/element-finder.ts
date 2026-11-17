@@ -37,6 +37,7 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
   private _modalRegistration: UmbModalRouteRegistrationController;
 
   #getInfoContext?: GetInfoContext;
+  #usageRequestId = 0;
 
   constructor() {
     super();
@@ -51,29 +52,35 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
       if (!workspace) return;
 
       this.observe((workspace as any).data, async (data: any) => {
+        const requestId = ++this.#usageRequestId;
+        this._nodes = [];
+        this._currentPage = 1;
+        this._error = null;
+        this._loading = false;
+
         if (!data?.alias || !this.#getInfoContext) return;
 
         this._contentTypeLabel = data?.isElement ? "Element Type" : "Document Type";
 
         this._loading = true;
-        this._error = null;
 
         try {
           const usage: Usage | null =
             await this.#getInfoContext.getInfoFromAlias(data.alias);
 
-          if (usage?.usages?.length) {
-            this._nodes = usage.usages;
-            this._currentPage = 1; // reset page if data changes
-          } else {
-            this._nodes = [];
-          }
+          if (requestId !== this.#usageRequestId) return;
+
+          this._nodes = usage?.usages ?? [];
         } catch (err) {
+          if (requestId !== this.#usageRequestId) return;
+
           console.error(err);
           this._error = "Error fetching usage";
           this._nodes = [];
         } finally {
-          this._loading = false;
+          if (requestId === this.#usageRequestId) {
+            this._loading = false;
+          }
         }
       });
     });
@@ -89,6 +96,11 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
           modal: { size: "large" },
         };
       });
+  }
+
+  override disconnectedCallback() {
+    ++this.#usageRequestId;
+    super.disconnectedCallback();
   }
 
   private get pagedNodes() {
@@ -125,6 +137,11 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
 
   render() {
     if (this._loading) return html`<uui-loader></uui-loader>`;
+    if (this._error) {
+      return html`<uui-box>
+        <uui-tag look="danger">${this._error}</uui-tag>
+      </uui-box>`;
+    }
 
     return html`
       <uui-box>
@@ -135,9 +152,6 @@ export default class ElementFinder extends UmbElementMixin(LitElement) {
           </strong>
         </div>
 
-        ${this._error
-          ? html`<uui-tag look="danger">${this._error}</uui-tag>`
-          : ""}
         ${this._nodes.length > 0
           ? html`
               <div class="usage-list">

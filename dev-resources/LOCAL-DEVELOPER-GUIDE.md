@@ -137,6 +137,12 @@ Then:
 
 ### The dashboard loads but the type list is empty
 
+Failed type-list and usage requests display an error rather than an empty-results message.
+When changing types during a request, only the latest selection can update the results.
+Responses received after leaving the view are ignored.
+The dashboard shows the selection prompt before searching and after changing types.
+A successful search with no usages shows "Found 0 instances".
+
 Check the browser dev tools network tab for:
 
 `/umbraco/element-finder/api/v1/all-types`

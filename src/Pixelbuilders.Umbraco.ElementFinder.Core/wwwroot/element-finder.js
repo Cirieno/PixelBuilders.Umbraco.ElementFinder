@@ -1,25 +1,26 @@
-var Y = (e) => {
+var se = (e) => {
   throw TypeError(e);
 };
-var Q = (e, t, r) => t.has(e) || Y("Cannot " + r);
-var R = (e, t, r) => (Q(e, t, "read from private field"), r ? r.call(e) : t.get(e)), Z = (e, t, r) => t.has(e) ? Y("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), ee = (e, t, r, s) => (Q(e, t, "write to private field"), s ? s.call(e, r) : t.set(e, r), r);
+var ae = (e, t, r) => t.has(e) || se("Cannot " + r);
+var H = (e, t, r) => (ae(e, t, "read from private field"), r ? r.call(e) : t.get(e)), ne = (e, t, r) => t.has(e) ? se("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), ie = (e, t, r, s) => (ae(e, t, "write to private field"), s ? s.call(e, r) : t.set(e, r), r);
 import "@umbraco-cms/backoffice/extension-api";
-import { UMB_AUTH_CONTEXT as Ee } from "@umbraco-cms/backoffice/auth";
-import { LitElement as ne, html as f, css as ie, state as b, customElement as oe } from "@umbraco-cms/backoffice/external/lit";
-import { UmbElementMixin as le } from "@umbraco-cms/backoffice/element-api";
-import { UMB_WORKSPACE_CONTEXT as Te, UMB_WORKSPACE_MODAL as ce } from "@umbraco-cms/backoffice/workspace";
-import { UMB_DOCUMENT_ENTITY_TYPE as D, UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN as ue } from "@umbraco-cms/backoffice/document";
-import { UmbControllerBase as Ae } from "@umbraco-cms/backoffice/class-api";
+import { UMB_AUTH_CONTEXT as Ue } from "@umbraco-cms/backoffice/auth";
+import { LitElement as he, html as h, css as pe, state as _, customElement as fe } from "@umbraco-cms/backoffice/external/lit";
+import { UmbElementMixin as ge } from "@umbraco-cms/backoffice/element-api";
+import { UMB_WORKSPACE_CONTEXT as Ne, UMB_WORKSPACE_MODAL as _e } from "@umbraco-cms/backoffice/workspace";
+import { UMB_DOCUMENT_ENTITY_TYPE as M, UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN as ye } from "@umbraco-cms/backoffice/document";
+import { UmbControllerBase as je } from "@umbraco-cms/backoffice/class-api";
 import "@umbraco-cms/backoffice/controller-api";
-import { UmbContextToken as Se } from "@umbraco-cms/backoffice/context-api";
-import { UmbModalRouteRegistrationController as de } from "@umbraco-cms/backoffice/router";
+import { UmbContextToken as qe } from "@umbraco-cms/backoffice/context-api";
+import { UmbModalRouteRegistrationController as me } from "@umbraco-cms/backoffice/router";
+import { UUISelectElement as De } from "@umbraco-cms/backoffice/external/uui";
 import "@umbraco-cms/backoffice/extension-registry";
-const Ce = {
+const Be = {
   bodySerializer: (e) => JSON.stringify(
     e,
     (t, r) => typeof r == "bigint" ? r.toString() : r
   )
-}, Oe = ({
+}, Re = ({
   onRequest: e,
   onSseError: t,
   onSseEvent: r,
@@ -32,101 +33,101 @@ const Ce = {
   url: d,
   ...n
 }) => {
-  let h;
-  const k = l ?? ((u) => new Promise((g) => setTimeout(g, u)));
+  let p;
+  const j = l ?? ((u) => new Promise((g) => setTimeout(g, u)));
   return { stream: async function* () {
     let u = c ?? 3e3, g = 0;
-    const $ = n.signal ?? new AbortController().signal;
-    for (; !$.aborted; ) {
+    const S = n.signal ?? new AbortController().signal;
+    for (; !S.aborted; ) {
       g++;
-      const I = n.headers instanceof Headers ? n.headers : new Headers(n.headers);
-      h !== void 0 && I.set("Last-Event-ID", h);
+      const q = n.headers instanceof Headers ? n.headers : new Headers(n.headers);
+      p !== void 0 && q.set("Last-Event-ID", p);
       try {
-        const E = {
+        const A = {
           redirect: "follow",
           ...n,
           body: n.serializedBody,
-          headers: I,
-          signal: $
+          headers: q,
+          signal: S
         };
-        let _ = new Request(d, E);
-        e && (_ = await e(d, E));
-        const m = await (n.fetch ?? globalThis.fetch)(_);
-        if (!m.ok)
+        let v = new Request(d, A);
+        e && (v = await e(d, A));
+        const y = await (n.fetch ?? globalThis.fetch)(v);
+        if (!y.ok)
           throw new Error(
-            `SSE failed: ${m.status} ${m.statusText}`
+            `SSE failed: ${y.status} ${y.statusText}`
           );
-        if (!m.body) throw new Error("No body in SSE response");
-        const v = m.body.pipeThrough(new TextDecoderStream()).getReader();
-        let L = "";
-        const H = () => {
+        if (!y.body) throw new Error("No body in SSE response");
+        const w = y.body.pipeThrough(new TextDecoderStream()).getReader();
+        let V = "";
+        const Q = () => {
           try {
-            v.cancel();
+            w.cancel();
           } catch {
           }
         };
-        $.addEventListener("abort", H);
+        S.addEventListener("abort", Q);
         try {
           for (; ; ) {
-            const { done: we, value: Pe } = await v.read();
-            if (we) break;
-            L += Pe;
-            const G = L.split(`
+            const { done: ke, value: Oe } = await w.read();
+            if (ke) break;
+            V += Oe;
+            const Z = V.split(`
 
 `);
-            L = G.pop() ?? "";
-            for (const xe of G) {
-              const $e = xe.split(`
-`), N = [];
-              let J;
-              for (const y of $e)
-                if (y.startsWith("data:"))
-                  N.push(y.replace(/^data:\s*/, ""));
-                else if (y.startsWith("event:"))
-                  J = y.replace(/^event:\s*/, "");
-                else if (y.startsWith("id:"))
-                  h = y.replace(/^id:\s*/, "");
-                else if (y.startsWith("retry:")) {
-                  const X = Number.parseInt(
-                    y.replace(/^retry:\s*/, ""),
+            V = Z.pop() ?? "";
+            for (const Ie of Z) {
+              const ze = Ie.split(`
+`), W = [];
+              let ee;
+              for (const m of ze)
+                if (m.startsWith("data:"))
+                  W.push(m.replace(/^data:\s*/, ""));
+                else if (m.startsWith("event:"))
+                  ee = m.replace(/^event:\s*/, "");
+                else if (m.startsWith("id:"))
+                  p = m.replace(/^id:\s*/, "");
+                else if (m.startsWith("retry:")) {
+                  const re = Number.parseInt(
+                    m.replace(/^retry:\s*/, ""),
                     10
                   );
-                  Number.isNaN(X) || (u = X);
+                  Number.isNaN(re) || (u = re);
                 }
-              let T, K = !1;
-              if (N.length) {
-                const y = N.join(`
+              let C, te = !1;
+              if (W.length) {
+                const m = W.join(`
 `);
                 try {
-                  T = JSON.parse(y), K = !0;
+                  C = JSON.parse(m), te = !0;
                 } catch {
-                  T = y;
+                  C = m;
                 }
               }
-              K && (a && await a(T), s && (T = await s(T))), r == null || r({
-                data: T,
-                event: J,
-                id: h,
+              te && (a && await a(C), s && (C = await s(C))), r == null || r({
+                data: C,
+                event: ee,
+                id: p,
                 retry: u
-              }), N.length && (yield T);
+              }), W.length && (yield C);
             }
           }
         } finally {
-          $.removeEventListener("abort", H), v.releaseLock();
+          S.removeEventListener("abort", Q), w.releaseLock();
         }
         break;
-      } catch (E) {
-        if (t == null || t(E), i !== void 0 && g >= i)
+      } catch (A) {
+        if (t == null || t(A), i !== void 0 && g >= i)
           break;
-        const _ = Math.min(
+        const v = Math.min(
           u * 2 ** (g - 1),
           o ?? 3e4
         );
-        await k(_);
+        await j(v);
       }
     }
   }() };
-}, ke = (e) => {
+}, We = (e) => {
   switch (e) {
     case "label":
       return ".";
@@ -137,7 +138,7 @@ const Ce = {
     default:
       return "&";
   }
-}, Ie = (e) => {
+}, Me = (e) => {
   switch (e) {
     case "form":
       return ",";
@@ -148,7 +149,7 @@ const Ce = {
     default:
       return ",";
   }
-}, ze = (e) => {
+}, Le = (e) => {
   switch (e) {
     case "label":
       return ".";
@@ -159,7 +160,7 @@ const Ce = {
     default:
       return "&";
   }
-}, he = ({
+}, be = ({
   allowReserved: e,
   explode: t,
   name: r,
@@ -167,7 +168,7 @@ const Ce = {
   value: a
 }) => {
   if (!t) {
-    const o = (e ? a : a.map((l) => encodeURIComponent(l))).join(Ie(s));
+    const o = (e ? a : a.map((l) => encodeURIComponent(l))).join(Me(s));
     switch (s) {
       case "label":
         return `.${o}`;
@@ -179,13 +180,13 @@ const Ce = {
         return `${r}=${o}`;
     }
   }
-  const c = ke(s), i = a.map((o) => s === "label" || s === "simple" ? e ? o : encodeURIComponent(o) : q({
+  const c = We(s), i = a.map((o) => s === "label" || s === "simple" ? e ? o : encodeURIComponent(o) : L({
     allowReserved: e,
     name: r,
     value: o
   })).join(c);
   return s === "label" || s === "matrix" ? c + i : i;
-}, q = ({
+}, L = ({
   allowReserved: e,
   name: t,
   value: r
@@ -197,7 +198,7 @@ const Ce = {
       "Deeply-nested arrays/objects aren’t supported. Provide your own `querySerializer()` to handle these."
     );
   return `${t}=${e ? r : encodeURIComponent(r)}`;
-}, fe = ({
+}, ve = ({
   allowReserved: e,
   explode: t,
   name: r,
@@ -209,11 +210,11 @@ const Ce = {
     return c ? a.toISOString() : `${r}=${a.toISOString()}`;
   if (s !== "deepObject" && !t) {
     let l = [];
-    Object.entries(a).forEach(([n, h]) => {
+    Object.entries(a).forEach(([n, p]) => {
       l = [
         ...l,
         n,
-        e ? h : encodeURIComponent(h)
+        e ? p : encodeURIComponent(p)
       ];
     });
     const d = l.join(",");
@@ -228,17 +229,17 @@ const Ce = {
         return d;
     }
   }
-  const i = ze(s), o = Object.entries(a).map(
-    ([l, d]) => q({
+  const i = Le(s), o = Object.entries(a).map(
+    ([l, d]) => L({
       allowReserved: e,
       name: s === "deepObject" ? `${r}[${l}]` : l,
       value: d
     })
   ).join(i);
   return s === "label" || s === "matrix" ? i + o : o;
-}, je = /\{[^{}]+\}/g, Ne = ({ path: e, url: t }) => {
+}, Fe = /\{[^{}]+\}/g, Ve = ({ path: e, url: t }) => {
   let r = t;
-  const s = t.match(je);
+  const s = t.match(Fe);
   if (s)
     for (const a of s) {
       let c = !1, i = a.substring(1, a.length - 1), o = "simple";
@@ -249,14 +250,14 @@ const Ce = {
       if (Array.isArray(l)) {
         r = r.replace(
           a,
-          he({ explode: c, name: i, style: o, value: l })
+          be({ explode: c, name: i, style: o, value: l })
         );
         continue;
       }
       if (typeof l == "object") {
         r = r.replace(
           a,
-          fe({
+          ve({
             explode: c,
             name: i,
             style: o,
@@ -269,7 +270,7 @@ const Ce = {
       if (o === "matrix") {
         r = r.replace(
           a,
-          `;${q({
+          `;${L({
             name: i,
             value: l
           })}`
@@ -282,7 +283,7 @@ const Ce = {
       r = r.replace(a, d);
     }
   return r;
-}, Ue = ({
+}, He = ({
   baseUrl: e,
   path: t,
   query: r,
@@ -291,22 +292,22 @@ const Ce = {
 }) => {
   const c = a.startsWith("/") ? a : `/${a}`;
   let i = (e ?? "") + c;
-  t && (i = Ne({ path: t, url: i }));
+  t && (i = Ve({ path: t, url: i }));
   let o = r ? s(r) : "";
   return o.startsWith("?") && (o = o.substring(1)), o && (i += `?${o}`), i;
 };
-function De(e) {
+function Ge(e) {
   const t = e.body !== void 0;
   if (t && e.bodySerializer)
     return "serializedBody" in e ? e.serializedBody !== void 0 && e.serializedBody !== "" ? e.serializedBody : null : e.body !== "" ? e.body : null;
   if (t)
     return e.body;
 }
-const qe = async (e, t) => {
+const Je = async (e, t) => {
   const r = typeof t == "function" ? await t(e) : t;
   if (r)
     return e.scheme === "bearer" ? `Bearer ${r}` : e.scheme === "basic" ? `Basic ${btoa(r)}` : r;
-}, pe = ({
+}, we = ({
   allowReserved: e,
   array: t,
   object: r
@@ -317,7 +318,7 @@ const qe = async (e, t) => {
       const o = a[i];
       if (o != null)
         if (Array.isArray(o)) {
-          const l = he({
+          const l = be({
             allowReserved: e,
             explode: !0,
             name: i,
@@ -327,7 +328,7 @@ const qe = async (e, t) => {
           });
           l && c.push(l);
         } else if (typeof o == "object") {
-          const l = fe({
+          const l = ve({
             allowReserved: e,
             explode: !0,
             name: i,
@@ -337,7 +338,7 @@ const qe = async (e, t) => {
           });
           l && c.push(l);
         } else {
-          const l = q({
+          const l = L({
             allowReserved: e,
             name: i,
             value: o
@@ -346,7 +347,7 @@ const qe = async (e, t) => {
         }
     }
   return c.join("&");
-}, Be = (e) => {
+}, Ke = (e) => {
   var r;
   if (!e)
     return "stream";
@@ -363,17 +364,17 @@ const qe = async (e, t) => {
     if (t.startsWith("text/"))
       return "text";
   }
-}, Le = (e, t) => {
+}, Xe = (e, t) => {
   var r, s;
   return t ? !!(e.headers.has(t) || (r = e.query) != null && r[t] || (s = e.headers.get("Cookie")) != null && s.includes(`${t}=`)) : !1;
-}, Re = async ({
+}, Ye = async ({
   security: e,
   ...t
 }) => {
   for (const r of e) {
-    if (Le(t, r.name))
+    if (Xe(t, r.name))
       continue;
-    const s = await qe(r, t.auth);
+    const s = await Je(r, t.auth);
     if (!s)
       continue;
     const a = r.name ?? "Authorization";
@@ -390,27 +391,27 @@ const qe = async (e, t) => {
         break;
     }
   }
-}, te = (e) => Ue({
+}, oe = (e) => He({
   baseUrl: e.baseUrl,
   path: e.path,
   query: e.query,
-  querySerializer: typeof e.querySerializer == "function" ? e.querySerializer : pe(e.querySerializer),
+  querySerializer: typeof e.querySerializer == "function" ? e.querySerializer : we(e.querySerializer),
   url: e.url
-}), re = (e, t) => {
+}), le = (e, t) => {
   var s;
   const r = { ...e, ...t };
-  return (s = r.baseUrl) != null && s.endsWith("/") && (r.baseUrl = r.baseUrl.substring(0, r.baseUrl.length - 1)), r.headers = ge(e.headers, t.headers), r;
-}, Me = (e) => {
+  return (s = r.baseUrl) != null && s.endsWith("/") && (r.baseUrl = r.baseUrl.substring(0, r.baseUrl.length - 1)), r.headers = Ee(e.headers, t.headers), r;
+}, Qe = (e) => {
   const t = [];
   return e.forEach((r, s) => {
     t.push([s, r]);
   }), t;
-}, ge = (...e) => {
+}, Ee = (...e) => {
   const t = new Headers();
   for (const r of e) {
     if (!r)
       continue;
-    const s = r instanceof Headers ? Me(r) : Object.entries(r);
+    const s = r instanceof Headers ? Qe(r) : Object.entries(r);
     for (const [a, c] of s)
       if (c === null)
         t.delete(a);
@@ -424,7 +425,7 @@ const qe = async (e, t) => {
   }
   return t;
 };
-class M {
+class G {
   constructor() {
     this.fns = [];
   }
@@ -450,11 +451,11 @@ class M {
     return this.fns.push(t), this.fns.length - 1;
   }
 }
-const We = () => ({
-  error: new M(),
-  request: new M(),
-  response: new M()
-}), Fe = pe({
+const Ze = () => ({
+  error: new G(),
+  request: new G(),
+  response: new G()
+}), et = we({
   allowReserved: !1,
   array: {
     explode: !0,
@@ -464,81 +465,81 @@ const We = () => ({
     explode: !0,
     style: "deepObject"
   }
-}), Ve = {
+}), tt = {
   "Content-Type": "application/json"
-}, me = (e = {}) => ({
-  ...Ce,
-  headers: Ve,
+}, Pe = (e = {}) => ({
+  ...Be,
+  headers: tt,
   parseAs: "auto",
-  querySerializer: Fe,
+  querySerializer: et,
   ...e
-}), He = (e = {}) => {
-  let t = re(me(), e);
-  const r = () => ({ ...t }), s = (d) => (t = re(t, d), r()), a = We(), c = async (d) => {
+}), rt = (e = {}) => {
+  let t = le(Pe(), e);
+  const r = () => ({ ...t }), s = (d) => (t = le(t, d), r()), a = Ze(), c = async (d) => {
     const n = {
       ...t,
       ...d,
       fetch: d.fetch ?? t.fetch ?? globalThis.fetch,
-      headers: ge(t.headers, d.headers),
+      headers: Ee(t.headers, d.headers),
       serializedBody: void 0
     };
-    n.security && await Re({
+    n.security && await Ye({
       ...n,
       security: n.security
     }), n.requestValidator && await n.requestValidator(n), n.body !== void 0 && n.bodySerializer && (n.serializedBody = n.bodySerializer(n.body)), (n.body === void 0 || n.serializedBody === "") && n.headers.delete("Content-Type");
-    const h = te(n);
-    return { opts: n, url: h };
+    const p = oe(n);
+    return { opts: n, url: p };
   }, i = async (d) => {
-    const { opts: n, url: h } = await c(d), k = {
+    const { opts: n, url: p } = await c(d), j = {
       redirect: "follow",
       ...n,
-      body: De(n)
+      body: Ge(n)
     };
-    let w = new Request(h, k);
-    for (const p of a.request.fns)
-      p && (w = await p(w, n));
-    const j = n.fetch;
-    let u = await j(w);
-    for (const p of a.response.fns)
-      p && (u = await p(u, w, n));
+    let P = new Request(p, j);
+    for (const f of a.request.fns)
+      f && (P = await f(P, n));
+    const R = n.fetch;
+    let u = await R(P);
+    for (const f of a.response.fns)
+      f && (u = await f(u, P, n));
     const g = {
-      request: w,
+      request: P,
       response: u
     };
     if (u.ok) {
-      const p = (n.parseAs === "auto" ? Be(u.headers.get("Content-Type")) : n.parseAs) ?? "json";
+      const f = (n.parseAs === "auto" ? Ke(u.headers.get("Content-Type")) : n.parseAs) ?? "json";
       if (u.status === 204 || u.headers.get("Content-Length") === "0") {
-        let v;
-        switch (p) {
+        let w;
+        switch (f) {
           case "arrayBuffer":
           case "blob":
           case "text":
-            v = await u[p]();
+            w = await u[f]();
             break;
           case "formData":
-            v = new FormData();
+            w = new FormData();
             break;
           case "stream":
-            v = u.body;
+            w = u.body;
             break;
           case "json":
           default:
-            v = {};
+            w = {};
             break;
         }
-        return n.responseStyle === "data" ? v : {
-          data: v,
+        return n.responseStyle === "data" ? w : {
+          data: w,
           ...g
         };
       }
-      let m;
-      switch (p) {
+      let y;
+      switch (f) {
         case "arrayBuffer":
         case "blob":
         case "formData":
         case "json":
         case "text":
-          m = await u[p]();
+          y = await u[f]();
           break;
         case "stream":
           return n.responseStyle === "data" ? u.body : {
@@ -546,45 +547,45 @@ const We = () => ({
             ...g
           };
       }
-      return p === "json" && (n.responseValidator && await n.responseValidator(m), n.responseTransformer && (m = await n.responseTransformer(m))), n.responseStyle === "data" ? m : {
-        data: m,
+      return f === "json" && (n.responseValidator && await n.responseValidator(y), n.responseTransformer && (y = await n.responseTransformer(y))), n.responseStyle === "data" ? y : {
+        data: y,
         ...g
       };
     }
-    const $ = await u.text();
-    let I;
+    const S = await u.text();
+    let q;
     try {
-      I = JSON.parse($);
+      q = JSON.parse(S);
     } catch {
     }
-    const E = I ?? $;
-    let _ = E;
-    for (const p of a.error.fns)
-      p && (_ = await p(E, u, w, n));
-    if (_ = _ || {}, n.throwOnError)
-      throw _;
+    const A = q ?? S;
+    let v = A;
+    for (const f of a.error.fns)
+      f && (v = await f(A, u, P, n));
+    if (v = v || {}, n.throwOnError)
+      throw v;
     return n.responseStyle === "data" ? void 0 : {
-      error: _,
+      error: v,
       ...g
     };
   }, o = (d) => (n) => i({ ...n, method: d }), l = (d) => async (n) => {
-    const { opts: h, url: k } = await c(n);
-    return Oe({
-      ...h,
-      body: h.body,
-      headers: h.headers,
+    const { opts: p, url: j } = await c(n);
+    return Re({
+      ...p,
+      body: p.body,
+      headers: p.headers,
       method: d,
-      onRequest: async (w, j) => {
-        let u = new Request(w, j);
+      onRequest: async (P, R) => {
+        let u = new Request(P, R);
         for (const g of a.request.fns)
-          g && (u = await g(u, h));
+          g && (u = await g(u, p));
         return u;
       },
-      url: k
+      url: j
     });
   };
   return {
-    buildUrl: te,
+    buildUrl: oe,
     connect: o("CONNECT"),
     delete: o("DELETE"),
     get: o("GET"),
@@ -610,7 +611,7 @@ const We = () => ({
     },
     trace: o("TRACE")
   };
-}, V = He(me()), Ge = (e) => ((e == null ? void 0 : e.client) ?? V).get({
+}, Y = rt(Pe()), st = (e) => ((e == null ? void 0 : e.client) ?? Y).get({
   security: [
     {
       scheme: "bearer",
@@ -619,7 +620,7 @@ const We = () => ({
   ],
   url: "/umbraco/element-finder/api/v1/all-types",
   ...e
-}), Je = (e) => (e.client ?? V).get({
+}), at = (e) => (e.client ?? Y).get({
   security: [
     {
       scheme: "bearer",
@@ -629,88 +630,95 @@ const We = () => ({
   url: "/umbraco/element-finder/api/v1/usage/{alias}",
   ...e
 });
-class Ke {
+class nt {
   async getElementInfo(t) {
-    try {
-      return (await Je({
-        path: {
-          alias: t
-        }
-      })).data ?? null;
-    } catch {
-      return null;
-    }
+    return (await at({
+      path: {
+        alias: t
+      },
+      throwOnError: !0
+    })).data;
   }
   async getAllDocumentTypes() {
-    try {
-      return (await Ge()).data ?? [];
-    } catch (t) {
-      return console.error("Failed to fetch document types:", t), [];
-    }
+    return (await st({
+      throwOnError: !0
+    })).data;
   }
 }
-var C;
-class se extends Ae {
+var U;
+class ce extends je {
   constructor(r) {
     super(r);
-    Z(this, C);
-    ee(this, C, new Ke()), this.provideContext(B, this);
+    ne(this, U);
+    ie(this, U, new nt()), this.provideContext(F, this);
   }
   async getInfoFromAlias(r) {
-    return R(this, C).getElementInfo(r);
+    return H(this, U).getElementInfo(r);
   }
   async getAllElementTypes() {
-    return R(this, C).getAllDocumentTypes();
+    return H(this, U).getAllDocumentTypes();
   }
 }
-C = new WeakMap();
-const B = new Se("GetInfoContext"), Xe = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+U = new WeakMap();
+const F = new qe("GetInfoContext"), it = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  GET_INFO_CONTEXT_TOKEN: B,
-  GetInfoContext: se,
-  default: se
+  GET_INFO_CONTEXT_TOKEN: F,
+  GetInfoContext: ce,
+  default: ce
 }, Symbol.toStringTag, { value: "Module" }));
-var Ye = Object.defineProperty, Qe = Object.getOwnPropertyDescriptor, ye = (e) => {
+var ot = Object.defineProperty, lt = Object.getOwnPropertyDescriptor, xe = (e) => {
   throw TypeError(e);
-}, O = (e, t, r, s) => {
-  for (var a = s > 1 ? void 0 : s ? Qe(t, r) : t, c = e.length - 1, i; c >= 0; c--)
+}, N = (e, t, r, s) => {
+  for (var a = s > 1 ? void 0 : s ? lt(t, r) : t, c = e.length - 1, i; c >= 0; c--)
     (i = e[c]) && (a = (s ? i(t, r, a) : i(a)) || a);
-  return s && a && Ye(t, r, a), a;
-}, be = (e, t, r) => t.has(e) || ye("Cannot " + r), ae = (e, t, r) => (be(e, t, "read from private field"), r ? r.call(e) : t.get(e)), Ze = (e, t, r) => t.has(e) ? ye("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), et = (e, t, r, s) => (be(e, t, "write to private field"), t.set(e, r), r), z;
-const W = 10;
-let x = class extends le(ne) {
+  return s && a && ot(t, r, a), a;
+}, $e = (e, t, r) => t.has(e) || xe("Cannot " + r), I = (e, t, r) => ($e(e, t, "read from private field"), r ? r.call(e) : t.get(e)), ue = (e, t, r) => t.has(e) ? xe("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), Te = (e, t, r, s) => ($e(e, t, "write to private field"), t.set(e, r), r), de = (e, t, r, s) => ({
+  set _(a) {
+    Te(e, t, a);
+  },
+  get _() {
+    return I(e, t, s);
+  }
+}), B, k;
+const J = 10;
+let T = class extends ge(he) {
   constructor() {
-    super(), this._nodes = [], this._contentTypeLabel = "Document Type", this._loading = !1, this._error = null, this._currentPage = 1, Ze(this, z), this.consumeContext(B, (e) => {
-      e && et(this, z, e);
-    }), this.consumeContext(Te, (e) => {
+    super(), this._nodes = [], this._contentTypeLabel = "Document Type", this._loading = !1, this._error = null, this._currentPage = 1, ue(this, B), ue(this, k, 0), this.consumeContext(F, (e) => {
+      e && Te(this, B, e);
+    }), this.consumeContext(Ne, (e) => {
       e && this.observe(e.data, async (t) => {
-        var r;
-        if (!(!(t != null && t.alias) || !ae(this, z))) {
-          this._contentTypeLabel = t != null && t.isElement ? "Element Type" : "Document Type", this._loading = !0, this._error = null;
+        const r = ++de(this, k)._;
+        if (this._nodes = [], this._currentPage = 1, this._error = null, this._loading = !1, !(!(t != null && t.alias) || !I(this, B))) {
+          this._contentTypeLabel = t != null && t.isElement ? "Element Type" : "Document Type", this._loading = !0;
           try {
-            const s = await ae(this, z).getInfoFromAlias(t.alias);
-            (r = s == null ? void 0 : s.usages) != null && r.length ? (this._nodes = s.usages, this._currentPage = 1) : this._nodes = [];
+            const s = await I(this, B).getInfoFromAlias(t.alias);
+            if (r !== I(this, k)) return;
+            this._nodes = (s == null ? void 0 : s.usages) ?? [];
           } catch (s) {
+            if (r !== I(this, k)) return;
             console.error(s), this._error = "Error fetching usage", this._nodes = [];
           } finally {
-            this._loading = !1;
+            r === I(this, k) && (this._loading = !1);
           }
         }
       });
-    }), this._modalRegistration = new de(
+    }), this._modalRegistration = new me(
       this,
-      ce
-    ).addAdditionalPath(D).onSetup(() => ({
-      data: { entityType: D },
+      _e
+    ).addAdditionalPath(M).onSetup(() => ({
+      data: { entityType: M },
       modal: { size: "large" }
     }));
   }
+  disconnectedCallback() {
+    ++de(this, k)._, super.disconnectedCallback();
+  }
   get pagedNodes() {
-    const e = (this._currentPage - 1) * W;
-    return this._nodes.slice(e, e + W);
+    const e = (this._currentPage - 1) * J;
+    return this._nodes.slice(e, e + J);
   }
   totalPages() {
-    return Math.ceil(this._nodes.length / W);
+    return Math.ceil(this._nodes.length / J);
   }
   nextPage() {
     this._currentPage < this.totalPages() && this._currentPage++;
@@ -719,7 +727,7 @@ let x = class extends le(ne) {
     this._currentPage > 1 && this._currentPage--;
   }
   _openEditModal(e) {
-    const t = ue.generateLocal({
+    const t = ye.generateLocal({
       unique: e
     });
     this._modalRegistration.open({}, t);
@@ -728,7 +736,9 @@ let x = class extends le(ne) {
     return e === 1 ? "instance" : "instances";
   }
   render() {
-    return this._loading ? f`<uui-loader></uui-loader>` : f`
+    return this._loading ? h`<uui-loader></uui-loader>` : this._error ? h`<uui-box>
+        <uui-tag look="danger">${this._error}</uui-tag>
+      </uui-box>` : h`
       <uui-box>
         <div slot="header">
           <strong>
@@ -737,11 +747,10 @@ let x = class extends le(ne) {
           </strong>
         </div>
 
-        ${this._error ? f`<uui-tag look="danger">${this._error}</uui-tag>` : ""}
-        ${this._nodes.length > 0 ? f`
+        ${this._nodes.length > 0 ? h`
               <div class="usage-list">
                 ${this.pagedNodes.map(
-      (e, t) => f`
+      (e, t) => h`
                     <div class="usage-item">
                       <span class="page-name">${e.pageName}</span>
                       <div class="actions">
@@ -757,13 +766,13 @@ let x = class extends le(ne) {
                         ></uui-button>
                       </div>
                     </div>
-                    ${t < this.pagedNodes.length - 1 ? f`<hr class="divider" />` : null}
+                    ${t < this.pagedNodes.length - 1 ? h`<hr class="divider" />` : null}
                   `
     )}
               </div>
 
               <!-- Pagination -->
-              ${this.totalPages() > 1 ? f`
+              ${this.totalPages() > 1 ? h`
                     <div class="pagination">
                       <uui-button
                         label="Previous"
@@ -780,7 +789,7 @@ let x = class extends le(ne) {
                       ></uui-button>
                     </div>
                   ` : null}
-            ` : f`
+            ` : h`
               <uui-state-message>
                 No content nodes are currently using this ${this._contentTypeLabel}.
               </uui-state-message>
@@ -789,8 +798,9 @@ let x = class extends le(ne) {
     `;
   }
 };
-z = /* @__PURE__ */ new WeakMap();
-x.styles = ie`
+B = /* @__PURE__ */ new WeakMap();
+k = /* @__PURE__ */ new WeakMap();
+T.styles = pe`
     :host {
       display: block;
       padding: var(--uui-size-layout-1);
@@ -831,76 +841,105 @@ x.styles = ie`
       margin-top: var(--uui-size-2);
     }
   `;
-O([
-  b()
-], x.prototype, "_nodes", 2);
-O([
-  b()
-], x.prototype, "_contentTypeLabel", 2);
-O([
-  b()
-], x.prototype, "_loading", 2);
-O([
-  b()
-], x.prototype, "_error", 2);
-O([
-  b()
-], x.prototype, "_currentPage", 2);
-x = O([
-  oe("element-finder")
-], x);
-var tt = Object.defineProperty, rt = Object.getOwnPropertyDescriptor, _e = (e) => {
+N([
+  _()
+], T.prototype, "_nodes", 2);
+N([
+  _()
+], T.prototype, "_contentTypeLabel", 2);
+N([
+  _()
+], T.prototype, "_loading", 2);
+N([
+  _()
+], T.prototype, "_error", 2);
+N([
+  _()
+], T.prototype, "_currentPage", 2);
+T = N([
+  fe("element-finder")
+], T);
+var ct = Object.defineProperty, ut = Object.getOwnPropertyDescriptor, Se = (e) => {
   throw TypeError(e);
-}, S = (e, t, r, s) => {
-  for (var a = s > 1 ? void 0 : s ? rt(t, r) : t, c = e.length - 1, i; c >= 0; c--)
+}, x = (e, t, r, s) => {
+  for (var a = s > 1 ? void 0 : s ? ut(t, r) : t, c = e.length - 1, i; c >= 0; c--)
     (i = e[c]) && (a = (s ? i(t, r, a) : i(a)) || a);
-  return s && a && tt(t, r, a), a;
-}, ve = (e, t, r) => t.has(e) || _e("Cannot " + r), U = (e, t, r) => (ve(e, t, "read from private field"), t.get(e)), st = (e, t, r) => t.has(e) ? _e("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), at = (e, t, r, s) => (ve(e, t, "write to private field"), t.set(e, r), r), A;
-const F = 10, nt = {
+  return s && a && ct(t, r, a), a;
+}, Ae = (e, t, r) => t.has(e) || Se("Cannot " + r), E = (e, t, r) => (Ae(e, t, "read from private field"), r ? r.call(e) : t.get(e)), K = (e, t, r) => t.has(e) ? Se("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, r), Ce = (e, t, r, s) => (Ae(e, t, "write to private field"), t.set(e, r), r), D = (e, t, r, s) => ({
+  set _(a) {
+    Ce(e, t, a);
+  },
+  get _() {
+    return E(e, t, s);
+  }
+}), O, $, z;
+const X = 10, dt = {
   document: "Document Types",
   element: "Element Types"
 };
-let P = class extends le(
-  ne
+let b = class extends ge(
+  he
 ) {
   constructor() {
-    super(), this._nodes = [], this._loading = !1, this._error = null, this._currentPage = 1, this._selectedAlias = "", this._docTypes = [], st(this, A), this.consumeContext(B, (e) => {
-      at(this, A, e), this._loadDocTypes();
-    }), this._modalRegistration = new de(
+    super(), this._nodes = [], this._loading = !1, this._hasSearched = !1, this._error = null, this._typesError = null, this._currentPage = 1, this._selectedAlias = "", this._docTypes = [], K(this, O), K(this, $, 0), K(this, z, 0), this.consumeContext(F, (e) => {
+      Ce(this, O, e), this._loadDocTypes();
+    }), this._modalRegistration = new me(
       this,
-      ce
-    ).addAdditionalPath(D).onSetup(() => ({
-      data: { entityType: D },
+      _e
+    ).addAdditionalPath(M).onSetup(() => ({
+      data: { entityType: M },
       modal: { size: "large" }
     }));
   }
   async _loadDocTypes() {
-    U(this, A) && (this._docTypes = await U(this, A).getAllElementTypes());
-  }
-  async _handleSearch() {
-    if (!(!this._selectedAlias || !U(this, A))) {
-      this._loading = !0, this._error = null;
+    const e = ++D(this, z)._;
+    if (E(this, O)) {
+      this._typesError = null;
       try {
-        const e = await U(this, A).getInfoFromAlias(
-          this._selectedAlias
-        );
-        this._nodes = (e == null ? void 0 : e.usages) ?? [], this._currentPage = 1;
-      } catch {
-        this._error = "Error fetching usage", this._nodes = [];
-      } finally {
-        this._loading = !1;
+        const t = await E(this, O).getAllElementTypes();
+        if (e !== E(this, z)) return;
+        this._docTypes = t;
+      } catch (t) {
+        if (e !== E(this, z)) return;
+        console.error(t), this._typesError = "Error fetching document types", this._docTypes = [];
       }
     }
   }
+  async _handleSearch() {
+    if (!this._selectedAlias || !E(this, O)) return;
+    const e = ++D(this, $)._;
+    this._loading = !0, this._error = null;
+    try {
+      const t = await E(this, O).getInfoFromAlias(
+        this._selectedAlias
+      );
+      if (e !== E(this, $)) return;
+      this._nodes = (t == null ? void 0 : t.usages) ?? [], this._currentPage = 1, this._hasSearched = !0;
+    } catch (t) {
+      if (e !== E(this, $)) return;
+      console.error(t), this._error = "Error fetching usage", this._nodes = [];
+    } finally {
+      e === E(this, $) && (this._loading = !1);
+    }
+  }
   _onSelectChange(e) {
-    this._selectedAlias = e.target.value;
+    if (!(e.currentTarget instanceof De)) return;
+    const t = e.currentTarget.value;
+    if (typeof t != "string") {
+      console.error("Expected a document type alias from the type selector");
+      return;
+    }
+    this._selectedAlias !== t && (++D(this, $)._, this._selectedAlias = t, this._nodes = [], this._currentPage = 1, this._error = null, this._loading = !1, this._hasSearched = !1);
+  }
+  disconnectedCallback() {
+    ++D(this, $)._, ++D(this, z)._, super.disconnectedCallback();
   }
   get pagedNodes() {
-    const e = (this._currentPage - 1) * F;
-    return this._nodes.slice(e, e + F);
+    const e = (this._currentPage - 1) * X;
+    return this._nodes.slice(e, e + X);
   }
   totalPages() {
-    return Math.ceil(this._nodes.length / F);
+    return Math.ceil(this._nodes.length / X);
   }
   nextPage() {
     this._currentPage < this.totalPages() && this._currentPage++;
@@ -909,16 +948,16 @@ let P = class extends le(
     this._currentPage > 1 && this._currentPage--;
   }
   _openEditModal(e) {
-    const t = ue.generateLocal({
+    const t = ye.generateLocal({
       unique: e
     });
     this._modalRegistration.open({}, t);
   }
   _getGroupLabel(e) {
-    return nt[e] ?? "Other Types";
+    return dt[e] ?? "Other Types";
   }
   render() {
-    return f`
+    return h`
       <uui-box headline="Element Finder">
         <div class="search-container">
           <uui-select
@@ -936,14 +975,14 @@ let P = class extends le(
           <uui-button
             look="primary"
             label="Find Usage"
-            .disabled=${!this._selectedAlias || this._loading}
+            .disabled=${!this._selectedAlias || this._loading || this._typesError !== null}
             @click=${this._handleSearch}
           >
             Find Usage
           </uui-button>
         </div>
 
-        ${this._loading ? f`<uui-loader></uui-loader>` : this._renderResults()}
+        ${this._loading ? h`<uui-loader></uui-loader>` : this._renderResults()}
       </uui-box>
     `;
   }
@@ -951,15 +990,13 @@ let P = class extends le(
     return e === 1 ? "instance" : "instances";
   }
   _renderResults() {
-    return this._error ? f`<uui-tag look="danger">${this._error}</uui-tag>` : this._nodes.length === 0 ? f`<uui-state-message
-        >Select a type and click search to see results.</uui-state-message
-      >` : f`
+    return this._typesError ? h`<uui-tag look="danger">${this._typesError}</uui-tag>` : this._error ? h`<uui-tag look="danger">${this._error}</uui-tag>` : this._hasSearched ? h`
       <div class="results-header">
         Found ${this._nodes.length} ${this._instanceLabel(this._nodes.length)}${this._nodes.length > 0 ? ":" : ""}
       </div>
       <div class="usage-list">
         ${this.pagedNodes.map(
-      (e, t) => f`
+      (e, t) => h`
             <div class="usage-item">
               <span class="page-name">${e.pageName}</span>
               <div class="actions">
@@ -975,15 +1012,17 @@ let P = class extends le(
                 ></uui-button>
               </div>
             </div>
-            ${t < this.pagedNodes.length - 1 ? f`<hr class="divider" />` : ""}
+            ${t < this.pagedNodes.length - 1 ? h`<hr class="divider" />` : ""}
           `
     )}
       </div>
       ${this._renderPagination()}
-    `;
+    ` : h`<uui-state-message
+        >Select a type and click search to see results.</uui-state-message
+      >`;
   }
   _renderPagination() {
-    return this.totalPages() <= 1 ? null : f`
+    return this.totalPages() <= 1 ? null : h`
       <div class="pagination">
         <uui-button
           label="Previous"
@@ -1002,8 +1041,10 @@ let P = class extends le(
     `;
   }
 };
-A = /* @__PURE__ */ new WeakMap();
-P.styles = ie`
+O = /* @__PURE__ */ new WeakMap();
+$ = /* @__PURE__ */ new WeakMap();
+z = /* @__PURE__ */ new WeakMap();
+b.styles = pe`
     :host {
       display: block;
       padding: 24px;
@@ -1046,28 +1087,34 @@ P.styles = ie`
       margin-bottom: 10px;
     }
   `;
-S([
-  b()
-], P.prototype, "_nodes", 2);
-S([
-  b()
-], P.prototype, "_loading", 2);
-S([
-  b()
-], P.prototype, "_error", 2);
-S([
-  b()
-], P.prototype, "_currentPage", 2);
-S([
-  b()
-], P.prototype, "_selectedAlias", 2);
-S([
-  b()
-], P.prototype, "_docTypes", 2);
-P = S([
-  oe("element-finder-dashboard")
-], P);
-const it = [
+x([
+  _()
+], b.prototype, "_nodes", 2);
+x([
+  _()
+], b.prototype, "_loading", 2);
+x([
+  _()
+], b.prototype, "_hasSearched", 2);
+x([
+  _()
+], b.prototype, "_error", 2);
+x([
+  _()
+], b.prototype, "_typesError", 2);
+x([
+  _()
+], b.prototype, "_currentPage", 2);
+x([
+  _()
+], b.prototype, "_selectedAlias", 2);
+x([
+  _()
+], b.prototype, "_docTypes", 2);
+b = x([
+  fe("element-finder-dashboard")
+], b);
+const ht = [
   {
     type: "workspaceView",
     name: "Element Finder",
@@ -1086,14 +1133,14 @@ const it = [
       pathname: "element-finder"
     }
   }
-], ot = [...it], lt = [
+], pt = [...ht], ft = [
   {
     type: "globalContext",
     alias: "getInfo.context",
     name: "Get Info context",
-    js: () => Promise.resolve().then(() => Xe)
+    js: () => Promise.resolve().then(() => it)
   }
-], ct = [...lt], ut = [
+], gt = [...ft], _t = [
   {
     type: "dashboard",
     name: "Element Finder",
@@ -1111,21 +1158,21 @@ const it = [
       }
     ]
   }
-], dt = [...ut], ht = [
-  ...ot,
-  ...ct,
-  ...dt
-], Et = (e, t) => {
-  e.consumeContext(Ee, async (r) => {
+], yt = [..._t], mt = [
+  ...pt,
+  ...gt,
+  ...yt
+], It = (e, t) => {
+  e.consumeContext(Ue, async (r) => {
     const s = r == null ? void 0 : r.getOpenApiConfiguration();
-    V.setConfig({
+    Y.setConfig({
       auth: (s == null ? void 0 : s.token) ?? void 0,
       baseUrl: (s == null ? void 0 : s.base) ?? "",
       credentials: (s == null ? void 0 : s.credentials) ?? "same-origin"
     });
-  }), t.registerMany(ht);
+  }), t.registerMany(mt);
 };
 export {
-  Et as onInit
+  It as onInit
 };
 //# sourceMappingURL=element-finder.js.map

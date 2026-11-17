@@ -11,27 +11,21 @@ export interface IGetInfoDataSource {
 
 export class GetInfoDataSource implements IGetInfoDataSource {
   async getElementInfo(alias: string): Promise<Usage | null> {
-    try {
-      const response = await getUmbracoElementFinderApiV1UsageByAlias({
-        path: {
-          alias: alias,
-        },
-      });
+    const response = await getUmbracoElementFinderApiV1UsageByAlias({
+      path: {
+        alias: alias,
+      },
+      throwOnError: true,
+    });
 
-      return response.data ?? null;
-    } catch (error) {
-      return null;
-    }
+    return response.data;
   }
 
   async getAllDocumentTypes(): Promise<Elements[]> {
-    try {
-      const response = await getUmbracoElementFinderApiV1AllTypes();
-      // Cast to Elements[] or ensure it's an array
-      return (response.data as Elements[]) ?? [];
-    } catch (error) {
-      console.error("Failed to fetch document types:", error);
-      return [];
-    }
+    const response = await getUmbracoElementFinderApiV1AllTypes({
+      throwOnError: true,
+    });
+
+    return response.data;
   }
 }

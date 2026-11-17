@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.13.1",
-    "lit": "^3.3.1"
+    "lit": "^3.3.3"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.85.0",
-    "@umbraco-cms/backoffice": "^17.5.0",
-    "typescript": "^5.9.3",
-    "vite": "^6.0.0"
+    "@hey-api/openapi-ts": "^0.99.0",
+    "@umbraco-cms/backoffice": "^17",
+    "typescript": "^5",
+    "vite": "^6"
   }
 }
